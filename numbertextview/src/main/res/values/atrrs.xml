@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <declare-styleable name="NumberTextView">
+            <!--动画每次变化时间-->
+            <attr name="ntvChangeDuration" format="integer"></attr>
+            <!--最小滚动间距-->
+            <attr name="ntvMinRoll" format="integer"></attr>
+            <!--是否使用最大动画时间间隔-->
+            <attr name="ntvUseMaxAnimDuration" format="boolean"></attr>
+            <!--最大动画时间-->
+            <attr name="ntvMaxAnimDuration" format="integer"></attr>
+            <!--每次滚动-->
+            <attr name="ntvRollInt" format="integer"></attr>
+            <!--开始滚动的值-->
+            <attr name="ntvStartValue" format="float"></attr>
+
+        </declare-styleable>
+
+</resources>

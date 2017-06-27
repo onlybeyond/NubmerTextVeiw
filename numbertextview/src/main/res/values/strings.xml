@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NubmerTextView</string>
+    <string name="set_sure_value">请设置正确数值!</string>
+
+</resources>

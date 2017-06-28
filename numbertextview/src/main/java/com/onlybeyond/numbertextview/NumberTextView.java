@@ -48,7 +48,7 @@ public class NumberTextView extends TextView {
     private double startNumberValueDouble;
 
 
-    private interface NumberTextViewListener {
+    public interface NumberTextViewListener {
         void animStart(long startTime);
 
         void animEnd(long endTime, long animDuration);

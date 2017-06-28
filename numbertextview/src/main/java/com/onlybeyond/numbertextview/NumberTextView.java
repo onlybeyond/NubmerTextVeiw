@@ -198,6 +198,10 @@ public class NumberTextView extends TextView {
         this.numberValueSymbol = numberValueSymbol;
     }
 
+    public void setMaxAnimDuration(int maxAnimDuration) {
+        this.maxAnimDuration = maxAnimDuration;
+    }
+
     /**
      * 设置滚动的值
      *

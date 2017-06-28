@@ -12,7 +12,12 @@
             <!--每次滚动-->
             <attr name="ntvRollInt" format="integer"></attr>
             <!--开始滚动的值-->
-            <attr name="ntvStartValue" format="float"></attr>
+            <attr name="ntvStartValue" format="string"></attr>
+            <!--数字后面的单位-->
+            <attr name="ntvNumberValueUnit" format="string"></attr>
+            <!--数字前面的符号-->
+            <attr name="ntvNumberSymbol" format="string"></attr>
+
 
         </declare-styleable>
 

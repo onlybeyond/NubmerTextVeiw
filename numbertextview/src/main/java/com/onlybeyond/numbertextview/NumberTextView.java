@@ -25,7 +25,7 @@ public class NumberTextView extends TextView {
     private static final int HANDLER_ROLL = 1;//滚动标识
 
     //base data
-    private boolean isUseMax = true;//是否使用最大时间间隔,默认使用
+    private boolean isUseMax = false;//是否使用最大动画时间,默认不使用
     private int rollInt = 2;//滚动的整数差值,
     private int minRollInt = 3;//最小滚动
     private int animStatus = 0;//动画的状态 0,默认;1动画中
@@ -35,14 +35,17 @@ public class NumberTextView extends TextView {
     private int maxAnimDuration = 1000;//最大动画时间
     private long startTime;//动画开始时间
     private double minRoll;//最小滚动,设置为0时将没有最小滚动
-    private double startNumberValue = 0;//开始滚动的值
     private double currentNumberValue;//当前的值
+    private String startNumberValue = "0";//开始滚动的值
+
     private String numberValue = "";//滚动的值
     private String numberValueUnit = "";//number 后面的单位
+    private String numberValueSymbol="";//number 前面的符号
 
     //object data
     private Context mContext;
     private NumberTextViewListener numberTextViewListener;
+    private double startNumberValueDouble;
 
 
     private interface NumberTextViewListener {
@@ -64,18 +67,18 @@ public class NumberTextView extends TextView {
                         long currentTime = System.currentTimeMillis();
                         long animDuration = currentTime - startTime;
                         if (valueDouble > 0) {
-                            if (currentNumberValue < startNumberValue) {
-                                currentNumberValue = startNumberValue;//设定 currentValue的初始值为startValue
+                            if (currentNumberValue < startNumberValueDouble) {
+                                currentNumberValue = startNumberValueDouble;//设定 currentValue的初始值为startValue
                             }
                             currentNumberValue += (minRoll) * rollInt;
 
                             if (currentNumberValue < Double.parseDouble(numberValue) && (animDuration < maxAnimDuration)) {
                                 BigDecimal bigDecimal = new BigDecimal(currentNumberValue);
-                                setText(bigDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
+                                setText(numberValueSymbol+bigDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
                                 handler.sendEmptyMessageDelayed(HANDLER_ROLL, duration);
                             } else {
                                 animStatus = 0;
-                                setText(String.valueOf(numberValue) + numberValueUnit);
+                                setText(numberValueSymbol+String.valueOf(numberValue) + numberValueUnit);
                                 Log.d(TAG, "---anim duration" + (currentTime - startTime));
                                 if (numberTextViewListener != null) {
                                     numberTextViewListener.animEnd(currentTime, animDuration);
@@ -83,17 +86,17 @@ public class NumberTextView extends TextView {
                             }
 
                         } else {
-                            if (currentNumberValue > startNumberValue) {
-                                currentNumberValue = startNumberValue;//设定 currentValue的初始值为startValue
+                            if (currentNumberValue > startNumberValueDouble) {
+                                currentNumberValue = startNumberValueDouble;//设定 currentValue的初始值为startValue
                             }
                             currentNumberValue -= (minRoll) * rollInt;
                             if (currentNumberValue > Double.parseDouble(numberValue) && (animDuration < maxAnimDuration)) {
                                 BigDecimal bigDecimal = new BigDecimal(currentNumberValue);
-                                setText(bigDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
+                                setText(numberValueSymbol+bigDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
                                 handler.sendEmptyMessageDelayed(HANDLER_ROLL, duration);
                             } else {
                                 animStatus = 0;
-                                setText(String.valueOf(numberValue) + numberValueUnit);
+                                setText(numberValueSymbol+String.valueOf(numberValue) + numberValueUnit);
                                 Log.d(TAG, "---anim duration" + (currentTime - startTime));
                                 if (numberTextViewListener != null) {
                                     numberTextViewListener.animEnd(currentTime, animDuration);
@@ -103,11 +106,11 @@ public class NumberTextView extends TextView {
                     } catch (NumberFormatException e) {
                         //数据转化异常
                         e.printStackTrace();
-                        setText(numberValue + numberValueUnit);
+                        setText(numberValueSymbol+numberValue + numberValueUnit);
 
                     }
                 } else {
-                    setText(numberValue + numberValueUnit);
+                    setText(numberValueSymbol+numberValue + numberValueUnit);
                 }
 
             }
@@ -131,7 +134,12 @@ public class NumberTextView extends TextView {
         maxAnimDuration = ta.getInt(R.styleable.NumberTextView_ntvMaxAnimDuration, 1000);
         minRoll = ta.getInt(R.styleable.NumberTextView_ntvMinRoll, 0);
         rollInt = ta.getInt(R.styleable.NumberTextView_ntvRollInt, 1);
-        startNumberValue = ta.getFloat(R.styleable.NumberTextView_ntvStartValue, 0f);
+        numberValueSymbol=ta.getString(R.styleable.NumberTextView_ntvNumberSymbol);
+        numberValueUnit=ta.getString(R.styleable.NumberTextView_ntvNumberValueUnit);
+        startNumberValue = ta.getString(R.styleable.NumberTextView_ntvStartValue);
+        startNumberValueDouble = Double.parseDouble(startNumberValue);
+
+
         ta.recycle();
     }
 
@@ -186,23 +194,27 @@ public class NumberTextView extends TextView {
         this.numberTextViewListener = numberTextViewListener;
     }
 
+    public void setNumberValueSymbol(String numberValueSymbol) {
+        this.numberValueSymbol = numberValueSymbol;
+    }
+
     /**
      * 设置滚动的值
      *
      * @param numberValue
      */
     public void setNumberValue(String numberValue) {
-        setNumberValue(0, numberValue);
+        setNumberValue("0", numberValue);
     }
 
     /**
      * 设置滚动的值
      *
-     * @param startValue
+     * @param startNumberValue//开始滚动的值
      * @param value
      */
-    public void setNumberValue(int startValue, String value) {
-        setNumberValue(startValue, value, "");
+    public void setNumberValue(String startNumberValue, String value) {
+        setNumberValue(startNumberValue, value, "");
     }
 
     /**
@@ -212,12 +224,14 @@ public class NumberTextView extends TextView {
      * @param value      最终值
      * @param valueUnit  单位
      */
-    public void setNumberValue(int startValue, String value, String valueUnit) {
+    public void setNumberValue(String startValue, String value, String valueUnit) {
         this.numberValue = value;
         this.numberValueUnit = valueUnit;
         try {
             if (!TextUtils.isEmpty(this.numberValue)) {
                 this.startNumberValue = startValue;//
+                startNumberValueDouble = Double.parseDouble(startNumberValue);
+
                 currentNumberValue = 0;
                 //当有动画时停止动画
                 stopAnim();
@@ -247,7 +261,7 @@ public class NumberTextView extends TextView {
     public void rollNum() {
         if (!TextUtils.isEmpty(numberValue)) {
             double valueDouble = Double.parseDouble(numberValue);
-            double distance = valueDouble - startNumberValue;//差值
+            double distance = valueDouble - Double.parseDouble(startNumberValue);//差值
             double distanceTemp = (maxAnimDuration / duration) * (rollInt * minRoll);
             BigDecimal bigDecimal = new BigDecimal(distanceTemp);
             double distanceDouble = bigDecimal.setScale(scale, BigDecimal.ROUND_HALF_UP).doubleValue();//解决double 类型多位bug
@@ -256,17 +270,20 @@ public class NumberTextView extends TextView {
                 Log.d(TAG, "---distance" + distance);
                 if ((distance < minRoll * minRollInt)) {
                     //小于最小滚动值,直接忽略变换
-                    setText(String.valueOf(numberValue) + numberValueUnit);
+                    setText(numberValueSymbol+String.valueOf(numberValue) + numberValueUnit);
                 } else {
                     animStatus = 1;
                     startTime = System.currentTimeMillis();
                     if (numberTextViewListener != null) {
                         numberTextViewListener.animStart(startTime);
                     }
-                    startNumberValue = (Double.parseDouble(numberValue) - distanceDouble) > startNumberValue ? (Double.parseDouble(numberValue) - distanceDouble) : startNumberValue;
+                    if(isUseMax&&maxAnimDuration!=0) {
+                        startNumberValue = "" + (Double.parseDouble(numberValue) - distanceDouble >
+                                startNumberValueDouble ? (Double.parseDouble(numberValue) - distanceDouble) : startNumberValueDouble);
+                    }
                     Log.d(TAG, "---distance temp" + distanceTemp + "  distance int" + distanceDouble + " start numberValue" + startNumberValue + "---distance" + distance);
                     BigDecimal bigDecimalStart = new BigDecimal(0);
-                    setText(bigDecimalStart.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
+                    setText(numberValueSymbol+bigDecimalStart.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
                     handler.sendEmptyMessageDelayed(HANDLER_ROLL, delayDuration + duration);
 
                 }
@@ -274,14 +291,17 @@ public class NumberTextView extends TextView {
                 //为负数的情况
                 if ((Math.abs(distance) < minRoll * minRollInt)) {
                     //小于最小滚动值,直接忽略变换
-                    setText(String.valueOf(numberValue) + numberValueUnit);
+                    setText(numberValueSymbol+String.valueOf(numberValue) + numberValueUnit);
                 } else {
                     animStatus = 1;
                     startTime = System.currentTimeMillis();
-                    startNumberValue = (Double.parseDouble(numberValue) + distanceDouble) < startNumberValue ? (Double.parseDouble(numberValue) + distanceDouble) : startNumberValue;
+                    if(isUseMax&&maxAnimDuration!=0) {
+                        startNumberValue = "" + ((Double.parseDouble(numberValue) + distanceDouble) <
+                                startNumberValueDouble ? (Double.parseDouble(numberValue) + distanceDouble) : startNumberValueDouble);
+                    }
                     Log.d(TAG, "---distance temp" + distanceTemp + "  distance int" + distanceDouble + " start numberValue" + startNumberValue + "---distance" + distance);
                     BigDecimal bigDecimalStart = new BigDecimal(0);
-                    setText(bigDecimalStart.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
+                    setText(numberValueSymbol+bigDecimalStart.setScale(scale, BigDecimal.ROUND_HALF_UP).toString() + numberValueUnit);
                     handler.sendEmptyMessageDelayed(HANDLER_ROLL, delayDuration + duration);
 
                 }
@@ -299,8 +319,6 @@ public class NumberTextView extends TextView {
     public void startAnim(int delayDuration) {
         if (!TextUtils.isEmpty(numberValue) && animStatus == 0) {
             this.delayDuration = delayDuration;
-
-            startNumberValue = 0;
             currentNumberValue = 0;
             rollNum();
         }
@@ -316,7 +334,7 @@ public class NumberTextView extends TextView {
     public void stopAnim() {
         if (animStatus == 1) {
             animStatus = 0;
-            setText(String.valueOf(numberValue) + numberValueUnit);
+            setText(numberValueSymbol+String.valueOf(numberValue) + numberValueUnit);
             handler.removeMessages(HANDLER_ROLL);
         }
     }

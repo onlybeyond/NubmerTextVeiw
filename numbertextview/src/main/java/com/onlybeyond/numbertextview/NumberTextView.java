@@ -194,10 +194,18 @@ public class NumberTextView extends TextView {
         this.numberTextViewListener = numberTextViewListener;
     }
 
+    /**
+     * 设置动画前面的符号
+     * @param numberValueSymbol
+     */
     public void setNumberValueSymbol(String numberValueSymbol) {
         this.numberValueSymbol = numberValueSymbol;
     }
 
+    /**
+     * 设置最大动画是哪
+     * @param maxAnimDuration
+     */
     public void setMaxAnimDuration(int maxAnimDuration) {
         this.maxAnimDuration = maxAnimDuration;
     }
@@ -219,6 +227,14 @@ public class NumberTextView extends TextView {
      */
     public void setNumberValue(String startNumberValue, String value) {
         setNumberValue(startNumberValue, value, "");
+    }
+
+    /**
+     * 设置数字后面的单位
+     * @param numberValueUnit
+     */
+    public void setNumberValueUnit(String numberValueUnit) {
+        this.numberValueUnit = numberValueUnit;
     }
 
     /**

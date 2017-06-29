@@ -4,7 +4,7 @@
             <!--动画每次变化时间-->
             <attr name="ntvChangeDuration" format="integer"></attr>
             <!--最小滚动间距-->
-            <attr name="ntvMinRoll" format="integer"></attr>
+            <attr name="ntvMinRollInt" format="integer"></attr>
             <!--是否使用最大动画时间间隔-->
             <attr name="ntvUseMaxAnimDuration" format="boolean"></attr>
             <!--最大动画时间-->
@@ -12,7 +12,7 @@
             <!--每次滚动-->
             <attr name="ntvRollInt" format="integer"></attr>
             <!--开始滚动的值-->
-            <attr name="ntvStartValue" format="string"></attr>
+            <attr name="ntvStartValue" format="string" ></attr>
             <!--数字后面的单位-->
             <attr name="ntvNumberValueUnit" format="string"></attr>
             <!--数字前面的符号-->
